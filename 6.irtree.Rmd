@@ -1,0 +1,48 @@
+---
+title: "irtree-script"
+author: "Lijin Zhang & Anya Ma"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Mapping 
+```{r}
+library(irtrees)
+library(lme4)
+
+mapping <- cbind(c(0, 1, 1), c(NA, 0, 1))
+
+VerbAgg3T <- dendrify(head(VerbAgg3,50)[ , -(1:2)], mapping)
+
+#before
+head(as.data.frame(VerbAgg3))
+
+#after
+head(as.data.frame(VerbAgg3T))
+```
+## Multidimensional model – Linear response tree
+
+```{r}
+onedim <- glmer(value ~ 0 + item:node + (1 | person),
+	family = binomial, 
+	data = VerbAgg3T,
+	control = glmerControl(optimizer ="nloptwrap"))
+onedim
+ranef(onedim)
+
+twodim <- glmer(value ~ 0 + item:node + (0 + node | person),
+	family = binomial, 
+	data = VerbAgg3T)
+twodim
+ranef(twodim)
+
+```
+
+
+
+
+
